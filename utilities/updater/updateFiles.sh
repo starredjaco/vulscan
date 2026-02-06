@@ -5,7 +5,7 @@
 ##     0 - Everything went fine, no updated files
 ##     1 - Everything went fine, at least one updated file
 ##
-## The exit status can be used to help other scripts decide if it is time to update 
+## The exit status can be used to help other scripts decide if it is time to update
 ## the files in the vulscan folder.
 ##
 declare -a FILES=(
@@ -34,7 +34,7 @@ DEBUG=true
 function logIfDebug(){
     if [ $DEBUG = true ]
     then
-	echo "$1"
+        echo "$1"
     fi
 }
 
@@ -51,19 +51,17 @@ cd downloading
 ##
 ## For each file, we want to download it, and see if it differs from old one.
 ##    If it differs, we assume that it is new, and thus we want to replace the old one.
-##    Unfortunately GitHub is issuing the cert for www.github.com only and not for other
-##    domains which is why we need to ignore cert warnings
 ##
 for file in "${FILES[@]}"
-do    
+do
     logIfDebug "Downloading ${file}..."
-    wget --quiet --no-check-certificate ${file}
+    wget --quiet "${file}"
     filename=$(echo ${file} | awk -F/ '{print $NF}')
     result=$(diff --suppress-common-lines --speed-large-files -y ${filename} ../../../${filename} | wc -l)
     if [ ${result} -ne 0 ]; then
-	logIfDebug "Updating ${filename} as it differs"
-	mv ${filename} ../../../
-	UPDATED=true
+        logIfDebug "Updating ${filename} as it differs"
+        mv ${filename} ../../../
+        UPDATED=true
     fi
 done
 
